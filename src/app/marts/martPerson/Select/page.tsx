@@ -30,34 +30,78 @@ const Page: React.FC = () => {
   // 性别筛选，数组可多选
   const [gender, setGender] = useState<string[]>([]);
 
-  // 过滤后的表格数据
-  const filteredData = allData.filter(row => {
-    return (
-      (!company || row.company === company) &&
-      (!department || row.department === department) &&
-      (!startDate || row.date >= startDate) &&
-      (gender.length === 0 || gender.includes(row.gender))
-    );
+  //另外一种选择，只有点击搜索，才能进行相关搜索
+  //   // 搜索参数状态
+  const [searchParams, setSearchParams] = useState({
+    company: '',
+    department: '',
+    startDate: '',
+    gender: [] as string[],
   });
 
+  // 只有点击搜索按钮才更新 searchParams
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    setSearchParams({
+      company,
+      department,
+      startDate,
+      gender,
+    });
+  };
+//   每个条件前面都加了“没选就不过滤”，只有选了才生效。
+// 多条件是“与”关系，所有条件都满足才会出现在表格里。
+// 性别支持多选（gender 是数组），只要包含在选中的性别里就通过。
+// 用途：
+// 让表格内容实时响应搜索表单的公司、部门、日期、性别等筛选条件。
+ 
+// 过滤后的表格数据
+  // const filteredData = allData.filter(row => {
+  //   return (
+  //     (!company || row.company === company) &&
+  //     (!department || row.department === department) &&
+  //     (!startDate || row.date >= startDate) &&
+  //     (gender.length === 0 || gender.includes(row.gender))
+  //   );
+  // });
+  // 1. filteredData 用 searchParams
+const filteredData = allData.filter(row => {
+  return (
+    (!searchParams.company || row.company === searchParams.company) &&
+    (!searchParams.department || row.department === searchParams.department) &&
+    (!searchParams.startDate || row.date >= searchParams.startDate) &&
+    (searchParams.gender.length === 0 || searchParams.gender.includes(row.gender))
+  );
+});
+
+  // 如果找到了该公司对象，就取它的 branches 属性（分公司数组）；如果没找到，结果为 undefined。
+// || []
+// 如果上一步结果为 undefined（即没有选公司或没找到），就返回空数组 []，保证 branches 始终是数组类型。
+// 总结：
+// 这行代码的作用是：
+// 获取当前选中公司的分公司列表，如果没有选公司，则返回空数组。
   // 当前公司下的部门
   const currentDepartments = companies.find(c => c.name === company)?.departments || [];
 
   // 性别checkbox变化
   const handleGenderChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+     // 获取当前点击的checkbox的name（"男"或"女"）
     const value = event.target.name;
     setGender(prev =>
       event.target.checked
-        ? [...prev, value]
-        : prev.filter(g => g !== value)
+        ? [...prev, value]    // 如果选中，就把该性别加入gender数组
+        : prev.filter(g => g !== value)  // 如果取消选中，就从gender数组中移除该性别
     );
   };
 
   // 搜索按钮（可选，实际已随状态联动）
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    // 这里可以做接口请求
-  };
+  // const handleSearch = (e: React.FormEvent) => {
+  //   e.preventDefault();
+  //   // 这里可以做接口请求
+  // };
+
+
+
 
   return (
     <Box sx={{ p: 3 }}>
@@ -126,7 +170,7 @@ const Page: React.FC = () => {
                 label="女"
               />
             </FormGroup>
-            <Button type="submit" variant="contained">搜索</Button>
+            <Button type="submit" variant="contained" onClick={handleSearch}>搜索</Button>
           </Box>
         </form>
       </Paper>

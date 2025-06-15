@@ -44,7 +44,23 @@ export default function ThreeLink() {
   const [branchId, setBranchId] = useState('');
   const [deptId, setDeptId] = useState('');
 
-  // 当前选中公司的分公司
+//   companyData.find(c => c.id === Number(companyId))
+// 在 companyData 数组中查找 id 等于当前选中公司 companyId 的公司对象（c）。
+
+// 由于 companyId 是字符串（Select 组件的 value），所以用 Number(companyId) 转成数字进行比较。
+// ?.branches
+// 如果找到了该公司对象，就取它的 branches 属性（分公司数组）；如果没找到，结果为 undefined。
+
+// || []
+// 如果上一步结果为 undefined（即没有选公司或没找到），就返回空数组 []，保证 branches 始终是数组类型。
+
+// 总结：
+// 这行代码的作用是：
+
+// 获取当前选中公司的分公司列表，如果没有选公司，则返回空数组。
+  
+// 当前选中公司的分公司
+  
   const branches = companyData.find(c => c.id === Number(companyId))?.branches || [];
   // 当前选中分公司的部门
   const departments = branches.find(b => b.id === Number(branchId))?.departments || [];
