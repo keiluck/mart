@@ -10,6 +10,7 @@ import Todo from "./Todo/page";
 import MartMemo from "./martMemo/page";
 import ThreeLink from "./ThreeLink/page";
 import Select from "./Select/page";
+import TabBox from "./TabBox/page";
 
 
 
@@ -123,6 +124,7 @@ export default function MartPerson() {
 
   return (
     <>
+    <TabBox />
     <Select />
     <ThreeLink />
     <Todo />
